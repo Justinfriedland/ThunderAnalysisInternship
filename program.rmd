@@ -1,0 +1,89 @@
+---
+title: "Friedland Thunder Analysis Internship"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Attaching dataframe and subsetting teams A and B
+```{r}
+data <- data.frame(shots_data)
+attach(data)
+A <- subset(data, team %in% c("Team A"))
+B <- subset(data, team %in% c("Team B"))
+```
+
+Creating zones
+```{r}
+twopt1 <- with(data, data[abs(x)<=22,],)
+twopt1 <- with(twopt1, twopt1[y<=7.8,],)
+twopt2 <- with(data, data[y>7.8,],)
+twopt2 <- with(twopt2, twopt2[sqrt((x)^2 + (y)^2) <= 23.75,],)
+twopt <- rbind(twopt1, twopt2)
+c3 <- with(data, data[abs(x) > 22,],)
+c3 <- with(c3, c3[y <= 7.8,],)
+nc3 <- with(data, data[y>7.8,],)
+nc3 <- with(nc3, nc3[sqrt((x)^2 + (y)^2) > 23.75,],)
+```
+
+Percentage taken for team A in each zone
+```{r}
+A2pt <- subset(twopt, team %in% c("Team A"))
+A2ptpercentagetaken <- nrow(A2pt) / nrow(A)
+round(A2ptpercentagetaken, digits = 3)
+ANC3 <- subset(nc3, team %in% c("Team A"))
+ANC3percentagetaken <- nrow(ANC3) / nrow(A)
+round(ANC3percentagetaken, digits = 3)
+AC3 <- subset(c3, team %in% c("Team A"))
+AC3percentagetaken <- nrow(AC3) / nrow(A)
+round(AC3percentagetaken, digits = 3)
+```
+Effective field goal percentage function
+```{r}
+efg <- function(fgm, threepm, fga){
+  efgpct <- (fgm+(.5*threepm))/fga
+  return(efgpct)
+}
+```
+
+Effective field goal percentage for team A in each zone
+```{r}
+A2ptfgm <- sum(A2pt$fgmade)
+Aefg2pt <- efg(A2ptfgm, 0, nrow(A2pt))
+round(Aefg2pt, digits = 3)
+ANC3fgm <- sum(ANC3$fgmade)
+AefgNC3 <- efg(ANC3fgm, ANC3fgm, nrow(ANC3))
+round(AefgNC3, digits = 3)
+AC3fgm <- sum(AC3$fgmade)
+AefgC3 <- efg(AC3fgm, AC3fgm, nrow(AC3))
+round(AefgC3, digits = 3)
+```
+
+Percentage taken for team B in each zone
+```{r}
+B2pt <- subset(twopt, team %in% c("Team B"))
+B2ptpercentagetaken <- nrow(B2pt) / nrow(B)
+round(B2ptpercentagetaken, digits = 3)
+BNC3 <- subset(nc3, team %in% c("Team B"))
+BNC3percentagetaken <- nrow(BNC3) / nrow(B)
+round(BNC3percentagetaken, digits = 3)
+BC3 <- subset(c3, team %in% c("Team B"))
+BC3percentagetaken <- nrow(BC3) / nrow(B)
+round(BC3percentagetaken, digits = 3)
+```
+
+Effective field goal percentage for team B in each zone
+```{r}
+B2ptfgm <- sum(B2pt$fgmade)
+Befg2pt <- efg(B2ptfgm, 0, nrow(B2pt))
+round(Befg2pt, digits = 3)
+BNC3fgm <- sum(BNC3$fgmade)
+BefgNC3 <- efg(BNC3fgm, BNC3fgm, nrow(BNC3))
+round(BefgNC3, digits = 3)
+BC3fgm <- sum(BC3$fgmade)
+BefgC3 <- efg(BC3fgm, BC3fgm, nrow(BC3))
+round(BefgC3, digits = 3)
+```
+
